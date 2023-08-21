@@ -11,11 +11,10 @@ export class UserController {
   async login(@Body() loginUserDto: LoginUserDto) {
     try {
       const loginResult = await this.userService.login(loginUserDto);
-      console.log('result====>', loginResult);
-      return loginResult;
-    } catch (error) {}
 
-    // const { username, password } = request.body;
-    // console.log(username, password);
+      return loginResult;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

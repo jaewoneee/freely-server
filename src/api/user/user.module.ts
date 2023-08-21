@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../../auth/jwt.strategy';
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   controllers: [UserController],
   providers: [UserService],
@@ -14,9 +14,13 @@ import { JwtStrategy } from '../../auth/jwt.strategy';
     // session을 사용하지 않을 예정이기 때문에 false
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     // jwt 생성할 때 사용할 시크릿 키와 만료일자 적어주기
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1y' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secretOrPrivateKey: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '24h' },
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [UserController],
